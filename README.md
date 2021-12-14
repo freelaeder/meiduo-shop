@@ -9,7 +9,7 @@
 
 #### 安装教程
 
-1.  xxxx
+1.  首先进入dome -> halo -> font_end_pc 启动前端项目。
 2.  xxxx
 3.  xxxx
 
