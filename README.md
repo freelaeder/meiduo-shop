@@ -15,8 +15,8 @@
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
+1.  dome文件夹存放前端代码
+2.  meiduo 是django 代码
 3.  xxxx
 
 #### 参与贡献
