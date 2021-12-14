@@ -23,8 +23,8 @@ SECRET_KEY = '%foq2kx$rcb8300@(h!py#z4=q*w-29yd@yad&3^!%@gs#z9!2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+# 添加可允许访问的ip，域名
+ALLOWED_HOSTS = ['www.meiduo.site', '127.0.0.1']
 
 # Application definition
 
@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
