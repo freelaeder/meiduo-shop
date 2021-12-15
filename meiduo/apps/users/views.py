@@ -23,3 +23,9 @@ class UsernameCountView(View):
             return JsonResponse({'code': 200, 'errmsg': '用户名不满足需求'})
         count = User.objects.filter(username=username).count()
         return JsonResponse({'code': 0, 'count': count, 'errmeg': 'OK'})
+
+
+class Usermobiles(View):
+    def get(self, request, mobile):
+        print(mobile)
+        return JsonResponse({'code': 0, 'count': mobile, 'errmeg': 'OK'})

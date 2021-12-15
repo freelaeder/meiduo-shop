@@ -32,11 +32,12 @@ from django.urls import path, include
 
 
 # 导入自己定义的转化器
-from utils.converters import UsernameConverter
+from utils.converters import UsernameConverter,MobileConverter
 from django.urls import register_converter
 
 # 注册转换器 前者是自己定义的转化器，后者是别名
 register_converter(UsernameConverter, 'username')
+register_converter(MobileConverter, 'mobile')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
