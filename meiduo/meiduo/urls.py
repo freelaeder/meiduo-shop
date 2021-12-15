@@ -17,20 +17,26 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 
-
 # 注意是测试log
-def logs(request):
-    # 1 导入
-    import logging
-    # 2创建日志器
-    logger = logging.getLogger('django')
-    # 3 调动日志器的方法存储日志
-    logger.info('用户登录了')
-    logger.warning('redis缓存不足')
-    logger.error('该记录不存在')
-    logger.debug('我不会被保存，哈喽')
-    return HttpResponse('ok')
+# def logs(request):
+#     # 1 导入
+#     import logging
+#     # 2创建日志器
+#     logger = logging.getLogger('django')
+#     # 3 调动日志器的方法存储日志
+#     logger.info('用户登录了')
+#     logger.warning('redis缓存不足')
+#     logger.error('该记录不存在')
+#     logger.debug('我不会被保存，哈喽')
+#     return HttpResponse('ok')
 
+
+# 导入自己定义的转化器
+from utils.converters import UsernameConverter
+from django.urls import register_converter
+
+# 注册转换器 前者是自己定义的转化器，后者是别名
+register_converter(UsernameConverter, 'username')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

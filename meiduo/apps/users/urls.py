@@ -4,5 +4,5 @@ from apps.users.views import *
 
 urlpatterns = [
     #  /usernames/ffdsf12/count/ 验证用户名
-    path('usernames/<username>/count/', UsernameCountView.as_view())
+    path('usernames/<username:username>/count/', UsernameCountView.as_view())
 ]
