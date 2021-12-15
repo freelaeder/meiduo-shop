@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import path, include
 
 
 # 注意是测试log
@@ -34,5 +34,7 @@ def logs(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('log/', logs)
+    # path('log/', logs)
+    # 添加子应用的urls
+    path('', include('apps.users.urls'))
 ]
