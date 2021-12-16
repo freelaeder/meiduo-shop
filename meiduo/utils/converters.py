@@ -1,6 +1,7 @@
 class UsernameConverter:
     """
     自定义转化器匹配用户名
+
     """
     regex = '[a-zA-Z0-9_-]{5,20}'
 
