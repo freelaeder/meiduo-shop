@@ -69,5 +69,7 @@ class RegisterView(View):
             User.objects.create_user(username=username, password=password, mobile=mobile)
         except Exception as e:
             return JsonResponse({'coed': 400, 'errmsg': 'err data'})
-
-        return JsonResponse({'code': 0, 'errmsg': 'hello'})
+        # 状态保持
+        from django.contrib.auth import login
+        login(request, username)
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})

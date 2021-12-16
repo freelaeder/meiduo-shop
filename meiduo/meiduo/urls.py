@@ -32,7 +32,7 @@ from django.urls import path, include
 
 
 # 导入自己定义的转化器
-from utils.converters import UsernameConverter,MobileConverter
+from utils.converters import UsernameConverter, MobileConverter
 from django.urls import register_converter
 
 # 注册转换器 前者是自己定义的转化器，后者是别名
@@ -44,5 +44,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('log/', logs)
     # 添加子应用的urls
-    path('', include('apps.users.urls'))
+    path('', include('apps.users.urls')),
+    # 验证图片验证码
+    path('', include('apps.verifications.urls'))
 ]
