@@ -17,3 +17,14 @@ class MobileConverter:
     def to_python(self, value):
         # to_python：将匹配结果传递到视图内部时使用
         return str(value)
+
+
+class UUIDConverter:
+    """
+    验证uuid
+    """
+    regex = '[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}'
+
+    def to_python(self, value):
+        # to_python：将匹配结果传递到视图内部时使用
+        return str(value)

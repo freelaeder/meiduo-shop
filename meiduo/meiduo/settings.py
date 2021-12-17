@@ -147,7 +147,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    "code": {  # code
+    "code": {  # code 图形验证码
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://192.168.85.129:6379/2",
         "OPTIONS": {

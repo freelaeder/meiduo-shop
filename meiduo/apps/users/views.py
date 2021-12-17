@@ -1,5 +1,7 @@
 import json
 import re
+from django import http
+import redis
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
@@ -52,7 +54,7 @@ class RegisterView(View):
         body_byte = request.body
         # 把Byte转换成json字典
         date_dict = json.loads(body_byte)
-        print(date_dict)
+        print('前端的数据--', date_dict)
         # {'username': 'freelaeder', 'password': '926400lolo', 'password2': '926400lolo',
         # 'mobile': '18916219220', 'sms_code': '23423', 'allow': True}
         username = date_dict.get('username')
@@ -61,15 +63,55 @@ class RegisterView(View):
         mobile = date_dict.get('mobile')
         sms_code = date_dict.get('sms_code')
         allow = date_dict.get('allow')
-        # 验证数据
-        # all里面传递
-        if not all([username, password1, password, mobile, sms_code, allow]):
-            return JsonResponse({'code': 400, 'errmsg': 'err data'})
+        # 验证数据 ------------------
+        # 判断参数是否齐全
+        if not all([username, password, password1, mobile, allow]):
+            return http.JsonResponse({'code': 400, 'errmsg': '缺少必传参数!'})
+        # 判断用户名是否是5-20个字符
+        if not re.match(r'^[a-zA-Z0-9_]{5,20}$', username):
+            return http.JsonResponse({'code': 400, 'errmsg': 'username格式有误!'})
+        # 判断密码是否是8-20个数字
+        if not re.match(r'^[0-9A-Za-z]{8,20}$', password):
+            return http.JsonResponse({'code': 400, 'errmsg': 'password格式有误!'})
+        # 判断两次密码是否一致
+        if password != password1:
+            return http.JsonResponse({'code': 400, 'errmsg': '两次输入不对!'})
+        # 判断手机号是否合法
+        if not re.match(r'^1[3-9]\d{9}$', mobile):
+            return http.JsonResponse({'code': 400, 'errmsg': 'mobile格式有误!'})
+        # 判断是否勾选用户协议
+        if allow != True:
+            return http.JsonResponse({'code': 400, 'errmsg': 'allow格式有误!'})
+
+        # 获取redis 中的短信验证码
         try:
-            User.objects.create_user(username=username, password=password, mobile=mobile)
+            from django_redis import get_redis_connection
+            redis_cli = get_redis_connection('code')
+            # 1.5 获取redis 数据redis 中存的 短信验证码
+            # 通过手机为键 验证码为值 获取
+            redis_sms_code: str = redis_cli.get(mobile)
+            print('reids---短信验证码', redis_sms_code)
+            # 如果找不到返回
+            if redis_sms_code is None:
+                return JsonResponse({'code': 1, 'errmsg': '用户短信验证错误'})
+            redis_sms_code = redis_sms_code.decode()
+            print(redis_sms_code, 'redis')
+            if sms_code != redis_sms_code:
+                return JsonResponse({'code': 1, 'errmsg': '用户输入的短信验证错误'})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'code': 1, 'errmsg': '用户短信验证错误11'})
+        # ----------------------------------------
+        # 保存数据
+        try:
+            user = User.objects.create_user(username=username, password=password, mobile=mobile)
         except Exception as e:
             return JsonResponse({'coed': 400, 'errmsg': 'err data'})
+
         # 状态保持
         from django.contrib.auth import login
-        login(request, username)
+        login(request, user)
+        # 验证短信验证码输入是否正确
+        print('用户输入的短信验证码', sms_code)
+
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
