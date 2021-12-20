@@ -30,7 +30,7 @@ class ImageCodeView(View):
 
 class SmsCodeView(View):
     """
-    验证短信 图形验证码
+    验证图形验证码ok，发送短信验证码
     """
 
     # 1 请求的地址
@@ -68,12 +68,29 @@ class SmsCodeView(View):
 
         # 2 验证短信验证码
         print('发送手机号', mobile)
+        # 12 -20 1 先根据key： flag 手机号。获取值
+        flag_send = redis_cli.get('flag_%s' % mobile)
+        # 如果值存在，返回错误的响应
+        if flag_send:
+            return JsonResponse({'code': 1, 'errmsg': '短信已经发送，请稍后再试'})
+        # 12-20 如果不在，继续向下执行
         # 2.1 生成随机验证码
         from random import randint
         sms_code = '%06d' % randint(0, 999999)
         print('生成的随机验证码', sms_code)
+        # 创建 redis 的管道 ，pipline对象
+        pl = redis_cli.pipeline()
         # 保存随机验证码 6位
-        redis_cli.setex(mobile, 300, sms_code)
+        pl.setex(mobile, 300, sms_code)
+        # 12-20 3 发送完保存key： 手机号 ，有效期  value:1
+        pl.setex('flag_s' % mobile, 60, 1)
+        # 执行请求
+        pl.execute()
+
+        # # 保存随机验证码 6位
+        # redis_cli.setex(mobile, 300, sms_code)
+        # # 12-20 3 发送完保存key： 手机号 ，有效期  value:1
+        # redis_cli.setex('flag_s' % mobile, 60, 1)
 
         smsSdk = SmsSDK(accId='8aaf07087dc23905017dc74ff83701b7',
                         accToken='68507d25130344b58d116d42ce4b131d',

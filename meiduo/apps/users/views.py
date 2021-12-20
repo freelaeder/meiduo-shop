@@ -96,6 +96,7 @@ class RegisterView(View):
                 return JsonResponse({'code': 1, 'errmsg': '用户短信验证错误'})
             redis_sms_code = redis_sms_code.decode()
             print(redis_sms_code, 'redis')
+            # 如果不等于返回
             if sms_code != redis_sms_code:
                 return JsonResponse({'code': 1, 'errmsg': '用户输入的短信验证错误'})
         except Exception as e:
