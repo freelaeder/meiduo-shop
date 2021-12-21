@@ -9,6 +9,8 @@ from django.views import View
 # 导入 apps下的users子应用的models 模型类
 from apps.users.models import *
 
+from django.contrib.auth import authenticate, login, logout
+
 
 # Create your views here.
 
@@ -110,9 +112,66 @@ class RegisterView(View):
             return JsonResponse({'coed': 400, 'errmsg': 'err data'})
 
         # 状态保持
-        from django.contrib.auth import login
         login(request, user)
         # 验证短信验证码输入是否正确
         print('用户输入的短信验证码', sms_code)
 
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
+# 用户登录
+class loginView(View):
+
+    def post(self, request):
+        # 1 接收json数据
+        body = request.body
+        data_dict = json.loads(body)
+        username = data_dict.get('username')
+        password = data_dict.get('password')
+        remembered = data_dict.get('remembered')
+        # 2 验证数据是否为空  正则
+        if not all([username, password, remembered]):
+            return JsonResponse({'code': 400, 'errmsg': '缺少必要参数'})
+
+        import re
+        # 验证用户登录方式 手机 账号
+        if re.match('^1[3-9]\d{9}$', username):
+            # 手机号
+            User.USERNAME_FIELD = 'mobile'
+        else:
+            # account 是用户名
+            # 根据用户名从数据库获取 user 对象返回.
+            User.USERNAME_FIELD = 'username'
+
+        # 3 验证码用户名和密码是否正确
+        user = authenticate(username=username, password=password)
+        if not user:
+            return JsonResponse({'code': 400, 'errmsg': '用户名密码错误'})
+        print(user)
+        # 4 状态保持
+        login(request, user)
+
+        # 5 判断是否记住登录
+        if remembered:
+            # 如果记住:  设置为两周有效
+            request.session.set_expiry(None)
+        else:
+            # 如果没有记住: 关闭立刻失效
+            request.session.set_expiry(0)
+        # 6 返回响应
+        # 注册时用户名写入到cookie，有效期15天
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+        return response
+
+
+# 用户退出
+class logoutView(View):
+    def delete(self, request):
+        # 清理session
+        logout(request)
+        # 退出登录，重定向到登录页
+        response = JsonResponse({'code': 0, 'errmsg': 'OK'})
+        # 退出登录时清除cookie 中的  username
+        response.delete_cookie('username')
+        return response

@@ -1,5 +1,8 @@
 # celery启动文件
 from celery import Celery
+import os
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'meiduo.settings')
 
 # 1创建celery实例
 celery_app = Celery('celery_tasks')

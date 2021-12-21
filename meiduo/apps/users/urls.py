@@ -8,6 +8,10 @@ urlpatterns = [
     # /mobiles/(?P<mobile>1[3-9]\d{9})/count/ get 验证手机号
     path('mobiles/<mobile:mobile>/count/', Usermobiles.as_view()),
     # 验证注册 post
-    path('register/', RegisterView.as_view())
+    path('register/', RegisterView.as_view()),
+    # 用户名登录
+    path('login/', loginView.as_view()),
+    # 用户退出
+    path('logout/',logoutView.as_view())
 
 ]

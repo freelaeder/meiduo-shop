@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from ronglian_sms_sdk import SmsSDK
+from django_redis import get_redis_connection
 
 
 class ImageCodeView(View):
@@ -42,6 +43,7 @@ class SmsCodeView(View):
         # 1 获取参数
         # image_code 就是用户输入的图形验证码
         image_code: str = request.GET.get('image_code')
+
         # 前段返回的uuid
         uuid = request.GET.get('image_code_id')
         # 1.2 验证参数是否传递完整 ，否则返回
@@ -49,8 +51,8 @@ class SmsCodeView(View):
             return JsonResponse({'code': 400, 'errmsg': '参数不够'})
         # 1.3 验证图片验证码
         # 1.4 连接redis
+
         try:
-            from django_redis import get_redis_connection
             redis_cli = get_redis_connection('code')
             # 1.5 获取redis 数据redis 中存的 text
             redis_image_code: str = redis_cli.get(uuid)
@@ -63,7 +65,6 @@ class SmsCodeView(View):
             if redis_image_code.lower() != image_code.lower():
                 return JsonResponse({'code': 400, 'errmsg': '用户输入的图形验证码错误'})
         except Exception as e:
-            print(e)
             return JsonResponse({'code': 400, 'errmsg': '网络异常'})
 
         # 2 验证短信验证码
@@ -78,25 +79,30 @@ class SmsCodeView(View):
         from random import randint
         sms_code = '%06d' % randint(0, 999999)
         print('生成的随机验证码', sms_code)
+
+        # # 保存随机验证码 6位
+        # redis_cli.setex(mobile, 300, sms_code)
+        # # 12-20 3 发送完保存key： 手机号 ，有效期  value:1
+        # redis_cli.setex('flag_%s' % mobile, 60, 1)
+
+        # smsSdk = SmsSDK(accId='8aaf07087dc23905017dc74ff83701b7',
+        #                 accToken='68507d25130344b58d116d42ce4b131d',
+        #                 appId='8a216da87dc23fe1017dc750a7aa0192')
+        # # datas image_code , 5是剩余时间
+        # smsSdk.sendMessage(tid='1', mobile=mobile, datas=(sms_code, 5))
+
         # 创建 redis 的管道 ，pipline对象
         pl = redis_cli.pipeline()
         # 保存随机验证码 6位
         pl.setex(mobile, 300, sms_code)
         # 12-20 3 发送完保存key： 手机号 ，有效期  value:1
-        pl.setex('flag_s' % mobile, 60, 1)
+        pl.setex('flag_%s' % mobile, 60, 1)
         # 执行请求
         pl.execute()
+        print(flag_send, 'flag_send')
 
-        # # 保存随机验证码 6位
-        # redis_cli.setex(mobile, 300, sms_code)
-        # # 12-20 3 发送完保存key： 手机号 ，有效期  value:1
-        # redis_cli.setex('flag_s' % mobile, 60, 1)
+        from celery_tasks.sms.tasks import send_sms_code
 
-        smsSdk = SmsSDK(accId='8aaf07087dc23905017dc74ff83701b7',
-                        accToken='68507d25130344b58d116d42ce4b131d',
-                        appId='8a216da87dc23fe1017dc750a7aa0192')
-        # datas image_code , 5是剩余时间
-        smsSdk.sendMessage(tid='1', mobile=mobile, datas=(sms_code, 5))
-
+        send_sms_code.delay(mobile=mobile, code=sms_code)
         # 最终返回
         return JsonResponse({'code': 0, 'errmsg': 'ok'})

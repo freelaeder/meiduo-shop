@@ -8,6 +8,7 @@ urlpatterns = [
     # 验证短信  图形验证码 get
     # this.host + '/sms_codes/' + this.mobile + '/' + '?image_code=' +
     # this.image_code + '&image_code_id=' + this.image_code_id
-    path('sms_codes/<mobile:mobile>/', SmsCodeView.as_view())
+    path('sms_codes/<mobile:mobile>/', SmsCodeView.as_view()),
+
 
 ]
