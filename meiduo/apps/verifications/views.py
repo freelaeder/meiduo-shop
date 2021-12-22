@@ -100,7 +100,7 @@ class SmsCodeView(View):
         # 执行请求
         pl.execute()
         print(flag_send, 'flag_send')
-
+        # 调用发送短信的任务
         from celery_tasks.sms.tasks import send_sms_code
 
         send_sms_code.delay(mobile=mobile, code=sms_code)

@@ -1,18 +1,20 @@
 import json
 import re
 from django import http
-import redis
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 
 # 导入 apps下的users子应用的models 模型类
 from apps.users.models import *
-
+# 导入utils
+from utils.views import LoginRequiredJSONMixin
 from django.contrib.auth import authenticate, login, logout
 
 
 # Create your views here.
+# 验证用户名是否重复
+
 
 class UsernameCountView(View):
     def get(self, request, username):
@@ -35,6 +37,7 @@ class UsernameCountView(View):
         return JsonResponse({'code': 0, 'count': count, 'errmeg': 'OK'})
 
 
+# 验证手机号
 class Usermobiles(View):
     # 验证手机号
     def get(self, request, mobile):
@@ -46,6 +49,7 @@ class Usermobiles(View):
         return JsonResponse({'code': 0, 'count': mobile, 'errmeg': 'OK'})
 
 
+#  完成注册请求
 class RegisterView(View):
     """
     完成注册请求
@@ -116,7 +120,10 @@ class RegisterView(View):
         # 验证短信验证码输入是否正确
         print('用户输入的短信验证码', sms_code)
 
-        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+        # 注册时用户名写入到cookie，有效期15天
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 15)
+        return response
 
 
 # 用户登录
@@ -130,7 +137,7 @@ class loginView(View):
         password = data_dict.get('password')
         remembered = data_dict.get('remembered')
         # 2 验证数据是否为空  正则
-        if not all([username, password, remembered]):
+        if not all([username, password]):
             return JsonResponse({'code': 400, 'errmsg': '缺少必要参数'})
 
         import re
@@ -174,4 +181,19 @@ class logoutView(View):
         response = JsonResponse({'code': 0, 'errmsg': 'OK'})
         # 退出登录时清除cookie 中的  username
         response.delete_cookie('username')
+        return response
+
+
+# 用户中心
+class userInfoView(LoginRequiredJSONMixin, View):
+    def get(self, request):
+        print(request.user.username,'request.user.username')
+        print(request.user.mobile,'request.user.moblie')
+        response = JsonResponse({'code': 0, 'errmsg': '个人中心',
+                                 'info_data': {
+                                     'username': request.user.username,
+                                     'mobile': request.user.mobile,
+                                     'email': 'yanglo@qq.com',
+                                     'email_active': False,
+                                 }})
         return response

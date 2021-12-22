@@ -12,6 +12,8 @@ urlpatterns = [
     # 用户名登录
     path('login/', loginView.as_view()),
     # 用户退出
-    path('logout/',logoutView.as_view())
+    path('logout/', logoutView.as_view()),
+    # 用户信息
+    path('info/', userInfoView.as_view()),
 
 ]
