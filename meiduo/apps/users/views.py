@@ -8,6 +8,7 @@ from django.views import View
 # 导入 apps下的users子应用的models 模型类
 from apps.users.models import *
 # 导入utils
+from celery_tasks.email.tasks import send_email_active
 from utils.views import LoginRequiredJSONMixin
 from django.contrib.auth import authenticate, login, logout
 
@@ -187,13 +188,43 @@ class logoutView(View):
 # 用户中心
 class userInfoView(LoginRequiredJSONMixin, View):
     def get(self, request):
-        print(request.user.username,'request.user.username')
-        print(request.user.mobile,'request.user.moblie')
+        print(request.user.username, 'request.user.username')
+        print(request.user.mobile, 'request.user.moblie')
+        print(request.user.email, '用户的邮箱')
         response = JsonResponse({'code': 0, 'errmsg': '个人中心',
                                  'info_data': {
                                      'username': request.user.username,
                                      'mobile': request.user.mobile,
-                                     'email': 'yanglo@qq.com',
+                                     'email': request.user.email,
                                      'email_active': False,
-                                 }})
+                                 }
+                                 })
         return response
+
+
+# 添加邮箱 验证
+class emailView(LoginRequiredJSONMixin, View):
+    def put(self, request):
+        # 1.获取json数据，转化为字典
+        body = request.body
+        data_dict = json.loads(body)
+        # 2 从字典里拿到邮箱地址
+        email = data_dict.get('email')
+        print(email, '用户传递的邮箱')
+        # 3 校验
+        if not email:
+            return JsonResponse({'code': 300, 'errmsg': '邮箱错误'})
+        # 4 保存到数据库
+        try:
+            request.user.email = email
+            request.user.save()
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({'code': 400, 'errmsg': '邮箱保存失败'})
+
+        # 异步发送认证邮件
+        send_email_active.delay(email)
+
+        # 返回响应
+        return JsonResponse({'code': 0, 'errmsg': 'OK'})

@@ -48,5 +48,7 @@ urlpatterns = [
     # 添加子应用的urls
     path('', include('apps.users.urls')),
     # 验证图片验证码 短信验证码
-    path('', include('apps.verifications.urls'))
+    path('', include('apps.verifications.urls')),
+    # 实现QQ扫码登录
+    path('', include('apps.oauth.urls')),
 ]
