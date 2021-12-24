@@ -214,14 +214,6 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
-# 添加QQ 扫码登录
-# QQ登录参数
-# 我们申请的 客户端id
-QQ_CLIENT_ID = '101474184'
-# 我们申请的 客户端秘钥
-QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
-# 我们申请时添加的: 登录成功后回调的路径
-QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
 
 # 添加邮箱 验证
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -233,3 +225,12 @@ EMAIL_HOST_USER = 'freelaeder@126.com'
 EMAIL_HOST_PASSWORD = 'DHZWZQYJZHOQRCCK'
 # 收件人看到的发件人
 EMAIL_FROM = 'freelaeder<freelaeder@126.com>'
+
+
+# 微博登录参数
+# 我们申请的 客户端id
+WEIBO_CLIENT_ID = '1319853025'
+# 我们申请的 客户端秘钥
+WEIBO_CLIENT_SECRET = '23d5c0f50c838585a8d8b23259318e29'
+# 我们申请时添加的: 登录成功后回调的路径
+WEIBO_REDIRECT_URI = 'http://www.meiduo.com:8080/oauth_callback.html'
