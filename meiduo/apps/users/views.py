@@ -8,6 +8,7 @@ from django.views import View
 # 导入 apps下的users子应用的models 模型类
 from apps.users.models import *
 # 导入utils
+from apps.users.utils import generate_verify_email_url, check_verify_email_token
 from celery_tasks.email.tasks import send_email_active
 from utils.views import LoginRequiredJSONMixin
 from django.contrib.auth import authenticate, login, logout
@@ -196,7 +197,7 @@ class userInfoView(LoginRequiredJSONMixin, View):
                                      'username': request.user.username,
                                      'mobile': request.user.mobile,
                                      'email': request.user.email,
-                                     'email_active': False,
+                                     'email_active': request.user.email_active,
                                  }
                                  })
         return response
@@ -224,7 +225,36 @@ class emailView(LoginRequiredJSONMixin, View):
             return JsonResponse({'code': 400, 'errmsg': '邮箱保存失败'})
 
         # 异步发送认证邮件
-        send_email_active.delay(email)
+        verify_url = generate_verify_email_url(request.user)
+        message = '<p>尊敬的用户您好！</p><p>感谢您使用美多商城。</p>' \
+                  '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
+                  '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+
+        send_email_active.delay(email, message)
 
         # 返回响应
         return JsonResponse({'code': 0, 'errmsg': 'OK'})
+
+
+# 激活邮箱
+class EmailVerifiView(View):
+    def put(self, request):
+        # 接受请求put 数据
+        token = request.GET.get('token')
+        # 对token 解密 获取 解密数据中的user_id
+        user_id = check_verify_email_token(token)
+        print(user_id, 'user_id')
+        # 如果找不到 ，说明过期
+        if not user_id:
+            return JsonResponse({'code': 400, 'errmsg': '激活邮件已经过期'})
+        # - 6 根据user_id去数据库查询
+        try:
+            user = User.objects.get(username=user_id)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'code': 405, 'errmsg': '当前用户不存在'})
+            # - 7 把查到user对象的 email_active字段 改为true 不要忘记save
+        user.email_active = True
+        user.save()
+        print('完成激活')
+        return JsonResponse({'code': 0, 'errmsg': '激活成功'})

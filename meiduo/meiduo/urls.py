@@ -49,6 +49,8 @@ urlpatterns = [
     path('', include('apps.users.urls')),
     # 验证图片验证码 短信验证码
     path('', include('apps.verifications.urls')),
-    # 实现QQ扫码登录
+    # 实现weibo扫码登录
     path('', include('apps.oauth.urls')),
+    # 地区
+    path('', include('apps.areas.urls'))
 ]

@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'apps.verifications',
     # 添加QQ应用
     'apps.oauth',
+    # 添加地区
+    'apps.areas',
 ]
 
 MIDDLEWARE = [
@@ -214,7 +216,6 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
-
 # 添加邮箱 验证
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.126.com'
@@ -222,10 +223,12 @@ EMAIL_PORT = 25
 # 发送邮件的邮箱
 EMAIL_HOST_USER = 'freelaeder@126.com'
 # 在邮箱中设置的客户端授权密码
-EMAIL_HOST_PASSWORD = 'DHZWZQYJZHOQRCCK'
+EMAIL_HOST_PASSWORD = 'GJOWWLVYFUWUHATO'
 # 收件人看到的发件人
-EMAIL_FROM = 'freelaeder<freelaeder@126.com>'
+EMAIL_FROM = 'freelaeder@126.com'
 
+# 邮箱验证链接
+EMAIL_VERIFY_URL = 'http://www.meiduo.site:8080/success_verify_email.html'
 
 # 微博登录参数
 # 我们申请的 客户端id

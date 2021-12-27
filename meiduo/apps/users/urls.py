@@ -17,5 +17,7 @@ urlpatterns = [
     path('info/', userInfoView.as_view()),
     # 添加邮箱
     path('emails/', emailView.as_view()),
+    # 激活邮箱
+    path('emails/verification/', EmailVerifiView.as_view()),
 
 ]
