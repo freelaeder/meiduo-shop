@@ -1,5 +1,5 @@
 from django.urls import path
-# 导入apps下的users中的模型类
+# 导入apps下的users中的视图
 from apps.users.views import *
 
 urlpatterns = [

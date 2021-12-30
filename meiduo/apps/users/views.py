@@ -228,7 +228,7 @@ class emailView(LoginRequiredJSONMixin, View):
         verify_url = generate_verify_email_url(request.user)
         message = '<p>尊敬的用户您好！</p><p>感谢您使用美多商城。</p>' \
                   '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
-                  '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+                  '<p><a href="%s">%s</a></p>' % (email, verify_url, verify_url)
 
         send_email_active.delay(email, message)
 
