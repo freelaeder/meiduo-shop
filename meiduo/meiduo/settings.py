@@ -45,6 +45,11 @@ INSTALLED_APPS = [
     'apps.oauth',
     # 添加地区
     'apps.areas',
+    # '添加 ad 广告'
+    'apps.ad',
+    # 添加商品
+    'apps.goods',
+
 ]
 
 MIDDLEWARE = [
