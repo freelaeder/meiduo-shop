@@ -52,5 +52,7 @@ urlpatterns = [
     # 实现weibo扫码登录
     path('', include('apps.oauth.urls')),
     # 地区
-    path('', include('apps.areas.urls'))
+    path('', include('apps.areas.urls')),
+    # 首页 展示
+    path('', include('apps.goods.urls')),
 ]
