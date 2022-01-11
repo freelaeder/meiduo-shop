@@ -1,7 +1,6 @@
 from django.db import models
 
 # Create your models here.
-
 from django.db import models
 from utils.models import BaseModel
 
@@ -38,3 +37,16 @@ class Content(BaseModel):
 
     def __str__(self):
         return self.category.name + ': ' + self.title
+
+    def to_dict(self):
+        data_dict = {
+            "category_id": self.category.id,
+            "title": self.title,
+            "url": self.url,
+            "image": self.image.url if self.image else '',
+            "text": self.text,
+            "sequence": self.sequence,
+            "status": self.status,
+        }
+
+        return data_dict

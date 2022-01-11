@@ -9,7 +9,9 @@ var vm = new Vue({
         cart_total_count: 0, // 购物车总数量
         carts: [], // 购物车数据,
         username:'',
-        content_category:[]
+        content_category:[],
+        contents:'',
+        categories:[]
     },
     mounted(){
         // 获取购物车数据
@@ -19,8 +21,15 @@ var vm = new Vue({
     	this.username = getCookie('username');
 
 
-        this.get_cart()
+        this.get_cart();
+        this.get_categories();
     },
+
+    updated(){
+        console.log("updated")
+        init();
+    },
+
     methods: {
         // get_category_data:function(){
         //     var url = this.host + '/content_category/';
@@ -48,6 +57,7 @@ var vm = new Vue({
                     console.log(error.response);
                 })
         },
+
         // 获取购物车数据
        get_cart(){
         let url = this.host + '/carts/simple/';
@@ -68,9 +78,29 @@ var vm = new Vue({
             })
             .catch(error => {
                 console.log(error);
+           
             })
-    },
+         },
 
+        get_categories(){
+        let url = this.host + '/index/';
+        axios.get(url, {
+            responseType: 'json',
+            withCredentials:true,
+        })
+            .then(response => {
+                if(response.data.code==0){
+                    this.categories = response.data.categories;
+                    this.contents = response.data.contents;
+                    
+                }else{
+                    alert(response.data.errmsg);
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
+         },
     }
 });
 

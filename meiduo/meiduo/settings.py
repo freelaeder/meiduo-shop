@@ -242,3 +242,9 @@ WEIBO_CLIENT_ID = '1319853025'
 WEIBO_CLIENT_SECRET = '23d5c0f50c838585a8d8b23259318e29'
 # 我们申请时添加的: 登录成功后回调的路径
 WEIBO_REDIRECT_URI = 'http://www.meiduo.com:8080/oauth_callback.html'
+
+# 指定自定义的Django文件存储类
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FastDFSStorage'
+
+# FastDFS相关参数
+FDFS_BASE_URL = 'http://192.168.85.129:8888/'
