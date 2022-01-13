@@ -24,7 +24,7 @@ SECRET_KEY = '%foq2kx$rcb8300@(h!py#z4=q*w-29yd@yad&3^!%@gs#z9!2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # 添加可允许访问的ip，域名
-ALLOWED_HOSTS = ['www.meiduo.site', '127.0.0.1', '0.0.0.0', '192.168.85.129']
+ALLOWED_HOSTS = ['www.meiduo.site', '127.0.0.1', '0.0.0.0', '192.168.232.128']
 
 # Application definition
 
@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'apps.ad',
     # 添加商品
     'apps.goods',
+    # 搜索
+    'haystack',
 
 ]
 
@@ -144,21 +146,21 @@ STATIC_URL = '/static/'
 CACHES = {
     "default": {  # 默认
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.85.129:6379/0",
+        "LOCATION": "redis://192.168.232.128:6379/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": {  # session
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.85.129:6379/1",
+        "LOCATION": "redis://192.168.232.128:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "code": {  # code 图形验证码
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.85.129:6379/2",
+        "LOCATION": "redis://192.168.232.128:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -247,4 +249,16 @@ WEIBO_REDIRECT_URI = 'http://www.meiduo.com:8080/oauth_callback.html'
 DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FastDFSStorage'
 
 # FastDFS相关参数
-FDFS_BASE_URL = 'http://192.168.85.129:8888/'
+FDFS_BASE_URL = 'http://192.168.232.128:8888/'
+
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://192.168.232.128:9200/',  # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'meiduo_index',  # Elasticsearch建立的索引库的名称
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
