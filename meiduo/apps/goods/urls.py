@@ -6,5 +6,7 @@ urlpatterns = [
     path('index/', IndexView.as_view()),
     # list/115/skus/?page=1&page_size=5&ordering=-create_time
     path('list/<category_id>/skus/', ListView.as_view()),
+    # 热销排行
+    path('hot/<category_id>/', HotView.as_view()),
 
 ]
