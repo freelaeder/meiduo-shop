@@ -8,5 +8,7 @@ urlpatterns = [
     path('list/<category_id>/skus/', ListView.as_view()),
     # 热销排行
     path('hot/<category_id>/', HotView.as_view()),
+    # 搜索视图
+    path('search/', MySearchView()),
 
 ]

@@ -9,6 +9,10 @@ from apps.ad.models import ContentCategory
 from apps.goods.models import GoodsChannel, GoodsCategory, SKU
 from utils.goods_utils import get_categories, get_breadcrumb
 
+# 导入:
+from haystack.views import SearchView
+from django.http import JsonResponse
+
 
 class IndexView(View):
     def get(self, request):
@@ -86,3 +90,24 @@ class HotView(View):
                 'default_image_url': sku.default_image.url,
             })
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'hot_skus': hot_skus})
+
+
+class MySearchView(SearchView):
+    '''重写SearchView类'''
+
+    def create_response(self):
+        # 获取搜索结果
+        context = self.get_context()
+        data_list = []
+        for sku in context['page'].object_list:
+            data_list.append({
+                'id': sku.object.id,
+                'name': sku.object.name,
+                'price': sku.object.price,
+                'default_image_url': sku.object.default_image.url,
+                'searchkey': context.get('query'),
+                'page_size': context['page'].paginator.num_pages,
+                'count': context['page'].paginator.count
+            })
+        # 拼接参数, 返回
+        return JsonResponse(data_list, safe=False)

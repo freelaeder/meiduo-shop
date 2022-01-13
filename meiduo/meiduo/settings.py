@@ -77,7 +77,8 @@ TEMPLATES = [
         #   'DIRS': [BASE_DIR / 'templates']
         # TypeError: unsupported operand type(s) for /: 'str' and 'str'
         # 修改为
-        'DIRS': [str.format(BASE_DIR, '/templates')]
+        # 'DIRS': [str.format(BASE_DIR, '/templates')]
+        'DIRS': [os.path.join(BASE_DIR, "templates"), ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -262,3 +263,6 @@ HAYSTACK_CONNECTIONS = {
 
 # 当添加、修改、删除数据时，自动生成索引
 # HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# 每页返回的条数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
