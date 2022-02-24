@@ -22,6 +22,7 @@ class ImageCodeView(View):
         redis_cli = get_redis_connection('code')
         # 3.2 指令操作 name time value
         redis_cli.setex(uuid, 300, text)
+        print(uuid, text)
         # 4 .返回图片二进制
         # 因为是二级制，不能直接使用JsonResponse返回数据
         # content_type =响应体数据类型

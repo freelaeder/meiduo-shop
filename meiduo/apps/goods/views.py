@@ -6,8 +6,8 @@ from django.shortcuts import render
 from django.views import View
 
 from apps.ad.models import ContentCategory
-from apps.goods.models import GoodsChannel, GoodsCategory, SKU
-from utils.goods_utils import get_categories, get_breadcrumb
+from apps.goods.models import GoodsChannel, GoodsCategory, SKU, GoodsVisitCount
+from utils.goods_utils import get_categories, get_breadcrumb, get_goods_specs
 
 # 导入:
 from haystack.views import SearchView
@@ -111,3 +111,60 @@ class MySearchView(SearchView):
             })
         # 拼接参数, 返回
         return JsonResponse(data_list, safe=False)
+
+
+# 商品详情页
+class DetailView(View):
+    """商品详情页"""
+
+    def get(self, request, sku_id):
+        """提供商品详情页"""
+        # 获取当前sku的信息
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return render(request, '404.html')
+
+        # 查询商品频道分类
+        categories = get_categories()
+        # 查询面包屑导航
+        breadcrumb = get_breadcrumb(sku.category)
+        # 查询SKU规格信息
+        goods_specs = goods_specs = get_goods_specs(sku)
+
+        # 渲染页面
+        context = {
+            'categories': categories,
+            'breadcrumb': breadcrumb,
+            'sku': sku,
+            'specs': goods_specs,
+        }
+        return render(request, 'detail.html', context)
+
+
+class DetailVisitView(View):
+    def post(self, request, category_id):
+        try:
+            # 1.获取当前的商品
+            category = GoodsCategory.objects.get(id=category_id)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'code': 400, 'errmsg': '缺少必传参数'})
+        # 查询 日期数据
+        from datetime import date
+        # 获取当天日期
+        today_data = date.today()
+        # 如果有当天的商品分类数据，就累计增加
+        try:
+            count_data = category.goodsvisitcount_set.get(date=today_data)
+        except:
+            # 如果没有增加
+            count_data = GoodsVisitCount()
+        try:
+            count_data.count += 1
+            count_data.category = category
+            count_data.save()
+        except Exception as e:
+            return JsonResponse({'code': 400, 'errmsg': '新增失败'})
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})

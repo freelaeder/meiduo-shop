@@ -10,5 +10,8 @@ urlpatterns = [
     path('hot/<category_id>/', HotView.as_view()),
     # 搜索视图
     path('search/', MySearchView()),
-
+    # 商品详情页
+    path('detail/<sku_id>/', DetailView.as_view()),
+    # 商品访问量
+    path('detail/visit/<category_id>/', DetailVisitView.as_view()),
 ]
