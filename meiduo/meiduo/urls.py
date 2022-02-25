@@ -55,4 +55,6 @@ urlpatterns = [
     path('', include('apps.areas.urls')),
     # 首页 展示
     path('', include('apps.goods.urls')),
+    # 购物车
+    path('', include('apps.carts.urls')),
 ]

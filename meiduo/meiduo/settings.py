@@ -51,6 +51,10 @@ INSTALLED_APPS = [
     'apps.goods',
     # 搜索
     'haystack',
+    # 定时任务
+    'django_crontab',
+    # 购物车
+    'apps.carts',
 
 ]
 
@@ -166,6 +170,21 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    "history": {  # code 用户浏览记录
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://192.168.232.128:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "carts": {  # code 用户浏览记录
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://192.168.232.128:6379/4",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
@@ -266,3 +285,8 @@ HAYSTACK_CONNECTIONS = {
 
 # 每页返回的条数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+
+CRONJOBS = [
+    # 每1分钟生成一次首页静态文件
+    ('*/1 * * * *', 'apps.goods.crons.generate_static_index_html', '>> ' + os.path.join(BASE_DIR, 'logs/crontab.log'))
+]

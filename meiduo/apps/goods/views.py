@@ -1,9 +1,13 @@
+import json
+
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django_redis import get_redis_connection
 
 # Create your views here.
 from django.views import View
+from redis import Redis
 
 from apps.ad.models import ContentCategory
 from apps.goods.models import GoodsChannel, GoodsCategory, SKU, GoodsVisitCount
@@ -12,6 +16,7 @@ from utils.goods_utils import get_categories, get_breadcrumb, get_goods_specs
 # 导入:
 from haystack.views import SearchView
 from django.http import JsonResponse
+from utils.views import LoginRequiredJSONMixin
 
 
 class IndexView(View):
@@ -167,4 +172,59 @@ class DetailVisitView(View):
         except Exception as e:
             return JsonResponse({'code': 400, 'errmsg': '新增失败'})
 
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
+# 用户浏览记录
+class HistoriesView(LoginRequiredJSONMixin, View):
+    # 获取
+    def get(self, request):
+        """获取用户浏览记录"""
+        # 获取Redis存储的sku_id列表信息
+        redis_conn = get_redis_connection('history')
+        sku_ids = redis_conn.lrange('history_%s' % request.user.id, 0, -1)
+        print(sku_ids)
+        # 根据sku_ids列表数据，查询出商品sku信息
+        skus = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            skus.append({
+                'id': sku.id,
+                'name': sku.name,
+                'default_image_url': sku.default_image.url,
+                'price': sku.price
+            })
+
+        return JsonResponse({'code': 0, 'errmsg': 'OK', 'skus': skus})
+
+    # 保存
+    def post(self, request):
+        # 获取用户
+        user = request.user
+        print(request, 'request')
+        # 接受参数
+        json_dict = json.loads(request.body.decode())
+        print(json_dict, 'json_dict')
+        sku_id = json_dict.get('sku_id')
+        if not sku_id:
+            return JsonResponse({'code': 400, 'errmsg': 'sku_id不存在'})
+        # 校验参数
+        try:
+            SKU.objects.get(id=sku_id)
+        except Exception as e:
+            print(e)
+            return JsonResponse({'code': 400, 'errmsg': 'sku不存在'})
+        # 保存用户数据
+        redis_cli: Redis = get_redis_connection('history')
+        # 创建连接
+        pl = redis_cli.pipeline()
+        print(user.id)
+        # 去重
+        pl.lrem('history_%s' % user.id, 0, sku_id)
+        # 存储
+        pl.lpush('history_%s' % user.id, sku_id)
+        # 截取5
+        pl.ltrim('history_%s' % user.id, 0, 4)
+        # 执行命令
+        pl.execute()
         return JsonResponse({'code': 0, 'errmsg': 'ok'})

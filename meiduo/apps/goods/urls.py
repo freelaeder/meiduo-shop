@@ -14,4 +14,6 @@ urlpatterns = [
     path('detail/<sku_id>/', DetailView.as_view()),
     # 商品访问量
     path('detail/visit/<category_id>/', DetailVisitView.as_view()),
+    # 用户浏览记录
+    path('browse_histories/', HistoriesView.as_view()),
 ]
