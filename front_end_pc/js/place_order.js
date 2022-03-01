@@ -25,6 +25,8 @@ var vm = new Vue({
                 this.skus = response.data.context.skus;
                 this.freight = response.data.context.freight;
                 this.addresses = response.data.context.addresses;
+                this.nowsite =   response.data.context.default_address_id;
+                
                 this.total_count = 0;
                 this.total_amount = 0;
                 for(var i=0; i<this.skus.length; i++){
