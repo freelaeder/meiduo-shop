@@ -256,5 +256,6 @@ class EmailVerifiView(View):
             # - 7 把查到user对象的 email_active字段 改为true 不要忘记save
         user.email_active = True
         user.save()
+
         print('完成激活')
         return JsonResponse({'code': 0, 'errmsg': '激活成功'})

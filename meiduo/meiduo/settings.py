@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'apps.carts',
     # 订单
     'apps.ordes',
+    # 添加支付
+    'apps.payment',
 
 ]
 
@@ -292,3 +294,11 @@ CRONJOBS = [
     # 每1分钟生成一次首页静态文件
     ('*/1 * * * *', 'apps.goods.crons.generate_static_index_html', '>> ' + os.path.join(BASE_DIR, 'logs/crontab.log'))
 ]
+
+# 支付宝sdk
+ALIPAY_APPID = '2021000119627777'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://www.meiduo.site:8080/pay_success.html'
+APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/app_private_key.pem')
+ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/alipay_public_keu.pem')
