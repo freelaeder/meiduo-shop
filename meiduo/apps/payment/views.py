@@ -1,3 +1,5 @@
+import os
+
 from alipay import AliPay
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
@@ -5,6 +7,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views import View
 from apps.ordes.models import OrderInfo
+from apps.payment.models import Payment
 from meiduo import settings
 from utils.views import LoginRequiredJSONMixin
 
@@ -50,3 +53,47 @@ class PaymentView(LoginRequiredJSONMixin, View):
         alipay_url = settings.ALIPAY_URL + "?" + order_string
         print('alipay_url', alipay_url)
         return JsonResponse({'code': 0, 'errmsg': 'OK', 'alipay_url': alipay_url})
+
+
+class PaymentstatusView(View):
+    def put(self, request):
+        # 获取前端传入的请求参数
+        query_dict = request.GET
+        data = query_dict.dict()
+        # 获取并从请求参数中剔除signature
+        signature = data.pop('sign')
+
+        # 创建支付宝支付对象
+        app_private_key_string = open(settings.APP_PRIVATE_KEY_PATH).read()
+        alipay_public_key_string = open(settings.ALIPAY_PUBLIC_KEY_PATH).read()
+        alipay = AliPay(
+            appid=settings.ALIPAY_APPID,
+            app_notify_url=None,
+            app_private_key_path=app_private_key_string,
+            alipay_public_key_path=alipay_public_key_string,
+            sign_type="RSA2",
+            debug=settings.ALIPAY_DEBUG
+        )
+        # 校验这个重定向是否是alipay重定向过来的
+        success = alipay.verify(data, signature)
+        if success:
+            # 读取order_id
+            order_id = data.get('out_trade_no')
+            # 读取支付宝流水号
+            trade_id = data.get('trade_no')
+            # 保存Payment模型类数据
+            Payment.objects.create(
+                order_id=order_id,
+                trade_id=trade_id
+            )
+
+            # 修改订单状态为待发送
+            OrderInfo.objects.filter(order_id=order_id, status=OrderInfo.ORDER_STATUS_ENUM['UNPAID']).update(
+                status=OrderInfo.ORDER_STATUS_ENUM["UNSEND"])
+
+            # 响应trade_id
+            return JsonResponse({'code': 0, 'errmsg': 'OK', 'trade_id': trade_id})
+        else:
+            # 订单支付失败，重定向到我的订单
+            return JsonResponse({'code': 400, 'errmsg': '非法请求'})
+        pass
