@@ -9,15 +9,15 @@
 
 #### 安装教程
 
-1.  首先进入dome -> halo -> font_end_pc 启动前端项目。
-2.  xxxx
+1.  首先进入 font_end_pc 启动前端项目。
+2.  meiduo_mall_admin 进入 npm i 
 3.  xxxx
 
 #### 使用说明
 
-1.  dome文件夹存放前端代码
-2.  meiduo 是django 代码
-3.  xxxx
+1.  dome 前端商城代码
+2.  meiduo 后端代码
+3.  meiduo_mall_admin 美多后台前段代码
 
 #### 参与贡献
 
