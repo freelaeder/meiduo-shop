@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'apps.ordes',
     # 添加支付
     'apps.payment',
+    # 添加后台管理
+    'apps.meiduo_admin',
 
 ]
 
@@ -241,9 +243,12 @@ AUTH_USER_MODEL = 'users.User'
 # CORS
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8080',
+    'http://127.0.0.1:8090',
     'http://localhost:8080',
     'http://www.meiduo.site:8080',
-    'http://www.meiduo.site:8000'
+    'http://www.meiduo.site:8000',
+    'http://www.meiduo.site:8090',
+
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -302,3 +307,17 @@ ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
 ALIPAY_RETURN_URL = 'http://www.meiduo.site:8080/pay_success.html'
 APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/app_private_key.pem')
 ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/alipay_public_keu.pem')
+
+# 配置drf
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+import datetime
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}

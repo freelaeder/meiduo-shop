@@ -61,4 +61,6 @@ urlpatterns = [
     path('', include('apps.ordes.urls')),
     #  支付
     path('', include('apps.payment.urls')),
+    # 后台管理
+    path('meiduo_admin/', include('apps.meiduo_admin.urls')),
 ]
