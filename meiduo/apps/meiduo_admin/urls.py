@@ -3,6 +3,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from apps.meiduo_admin.login import admin_jwt_token
 from apps.meiduo_admin.views.statistical import UserActiveCount, UserOrderCount, UserMonthCount, UserDayCount, UserCount
+from apps.meiduo_admin.views.user import UserListView
 
 urlpatterns = [
     # path('authorizations/', obtain_jwt_token)
@@ -18,4 +19,7 @@ urlpatterns = [
     path('statistical/day_increment/', UserDayCount.as_view()),
     # 用户总数
     path('statistical/total_count/', UserCount.as_view()),
+    # 用户管理 查询 users/?page=1&pagesize=10&keyword=
+    path('users/', UserListView.as_view()),
+
 ]
