@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 
 # 用户管理 查询 users/?page=1&pagesize=10&keyword=
 from apps.meiduo_admin.serializers.user import UserSerializer
@@ -6,7 +6,7 @@ from apps.meiduo_admin.utils import PageNum
 from apps.users.models import User
 
 
-class UserListView(ListAPIView):
+class UserListView(ListAPIView, ListCreateAPIView):
     # 指定序列化器
     serializer_class = UserSerializer
     # 分页
