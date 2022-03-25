@@ -21,7 +21,7 @@ class PageNum(PageNumberPagination):
     # 前后端交互的分页名
     page_size_query_param = 'pagesize'
     # 限定最大的每页数量
-    max_page_size = 2
+    max_page_size = 5
 
     # 重写分页返回方法，按照指定字段返回
     def get_paginated_response(self, data):
