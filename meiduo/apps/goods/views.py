@@ -77,7 +77,7 @@ class ListView(View):
                 {'id': sku.id,
                  'name': sku.name,
                  'price': sku.price,
-                 'default_image_url': sku.default_image.url, })
+                 'default_image_url': sku.default_image.url if sku.default_image else "", })
         return JsonResponse({'code': 0, 'errmsg': "ok", 'count': count, "list": sku_list, 'breadcrumb': breadcrumb})
 
 
@@ -92,7 +92,7 @@ class HotView(View):
                 'id': sku.id,
                 'name': sku.name,
                 'price': sku.price,
-                'default_image_url': sku.default_image.url,
+                'default_image_url': sku.default_image.url if sku.default_image else "",
             })
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'hot_skus': hot_skus})
 
@@ -109,7 +109,7 @@ class MySearchView(SearchView):
                 'id': sku.object.id,
                 'name': sku.object.name,
                 'price': sku.object.price,
-                'default_image_url': sku.object.default_image.url,
+                'default_image_url': sku.object.default_image.url if sku.default_image else "",
                 'searchkey': context.get('query'),
                 'page_size': context['page'].paginator.num_pages,
                 'count': context['page'].paginator.count
@@ -191,7 +191,7 @@ class HistoriesView(LoginRequiredJSONMixin, View):
             skus.append({
                 'id': sku.id,
                 'name': sku.name,
-                'default_image_url': sku.default_image.url,
+                'default_image_url': sku.default_image.url if sku.default_image else "",
                 'price': sku.price
             })
 

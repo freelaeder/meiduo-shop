@@ -4,6 +4,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from apps.meiduo_admin.login import admin_jwt_token
 from apps.meiduo_admin.views.image import SKUImageView, SkuImage
+from apps.meiduo_admin.views.sku_view import SKUModelViewSet, SKUCategoriesView, GoodsSimpleView, GoodsSpecView
 from apps.meiduo_admin.views.statistical import UserActiveCount, UserOrderCount, UserMonthCount, UserDayCount, UserCount
 from apps.meiduo_admin.views.user import UserListView
 
@@ -25,6 +26,12 @@ urlpatterns = [
     path('users/', UserListView.as_view()),
     # skus/simple/ 返回新增商品时的商品id
     path('skus/simple/', SkuImage.as_view()),
+    # 获取三级分类信息
+    path('skus/categories/', SKUCategoriesView.as_view()),
+    # 获取SPU表名称数据
+    path('goods/simple/', GoodsSimpleView.as_view()),
+    # 获取SPU商品规格信息
+    path('goods/<int:pk>/specs/', GoodsSpecView.as_view()),
 
 ]
 
@@ -33,5 +40,7 @@ router = DefaultRouter()
 # 注册路由
 # 获取图片
 router.register(prefix='skus/images', viewset=SKUImageView, basename='image')
+# sku管理
+router.register(prefix='skus', viewset=SKUModelViewSet, basename='sku')
 # 把路由添加到urlpatterns
 urlpatterns += router.urls

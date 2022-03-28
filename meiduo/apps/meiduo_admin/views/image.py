@@ -13,6 +13,9 @@ from apps.meiduo_admin.utils import PageNum
 class SKUImageView(ModelViewSet):
     # 指定 queryset
     queryset = SKUImage.objects.all()
+    # queryset = SKUImage.objects.filter(is_delete=false)
+
+
     # 序列化器
     serializer_class = SKUImageSerializer
     # 分页
@@ -87,11 +90,12 @@ class SKUImageView(ModelViewSet):
         pks = kwargs.get('pk')
         # 获取 删除的字段
         del_img = SKUImage.objects.get(id=pks)
-        # 删除的fields_id
+        # 获取完整的路径，然后截取
         field = del_img.image.url
         # 截取
         print(field[28:])
         del_url = field[28:]
+        # group1/M00/00/02/wKjogGI9k0KAUt0gAAB5NgRRAsI9607981 image_url
         # 连接fastdfs
         from fdfs_client.client import Fdfs_client
         client = Fdfs_client('utils/fastdfs/client.conf')
