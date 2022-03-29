@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ModelViewSet
 
 from apps.goods.models import SKU, SPU, SPUSpecification
@@ -10,6 +11,8 @@ from apps.goods.models import GoodsCategory
 
 # sku管理
 class SKUModelViewSet(ModelViewSet):
+    # 添加权限管理
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
     queryset = SKU.objects.all()
     serializer_class = SKUSerializer
     pagination_class = PageNum

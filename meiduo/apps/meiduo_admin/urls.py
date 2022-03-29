@@ -4,6 +4,8 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from apps.meiduo_admin.login import admin_jwt_token
 from apps.meiduo_admin.views.image import SKUImageView, SkuImage
+from apps.meiduo_admin.views.permis import PermisAdmins, PermissionView, ContentTypeAPIView, GroupView, GroupSimpleView, \
+    AdminSimpleAPIView
 from apps.meiduo_admin.views.sku_view import SKUModelViewSet, SKUCategoriesView, GoodsSimpleView, GoodsSpecView
 from apps.meiduo_admin.views.statistical import UserActiveCount, UserOrderCount, UserMonthCount, UserDayCount, UserCount
 from apps.meiduo_admin.views.user import UserListView
@@ -32,6 +34,12 @@ urlpatterns = [
     path('goods/simple/', GoodsSimpleView.as_view()),
     # 获取SPU商品规格信息
     path('goods/<int:pk>/specs/', GoodsSpecView.as_view()),
+    # 添加全选管理时，需要的选项
+    path('permission/content_types/', ContentTypeAPIView.as_view()),
+    # 添加组的时候 获取简单权限列表（辅助组的管理）
+    path('permission/simple/', GroupSimpleView.as_view()),
+    # 添加管理员的时候展示组
+    path('permission/groups/simple/', AdminSimpleAPIView.as_view()),
 
 ]
 
@@ -42,5 +50,11 @@ router = DefaultRouter()
 router.register(prefix='skus/images', viewset=SKUImageView, basename='image')
 # sku管理
 router.register(prefix='skus', viewset=SKUModelViewSet, basename='sku')
+# 权限管理
+router.register(prefix='permission/perms', viewset=PermissionView, basename='pers')
+# 组的管理
+router.register(prefix='permission/groups', viewset=GroupView, basename='groups')
+# 管理员管理
+router.register(prefix='permission/admins', viewset=PermisAdmins, basename='admins')
 # 把路由添加到urlpatterns
 urlpatterns += router.urls
